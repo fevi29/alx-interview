@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 """ Minimum operations questions
-    Topic: Dynamic programming
 """
 
 
