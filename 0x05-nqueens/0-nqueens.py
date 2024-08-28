@@ -1,80 +1,148 @@
 #!/usr/bin/python3
-""" This module solves the N-Queens problem.
+"""
+The N queens puzzle is the challenge of placing N
+non-attacking queens on an N×N chessboard.
+
+TODO:
+    * Write a program that solves the N queens problem.
 """
 
-import sys
 
-
-def move(n):
-    """Find all solutions to the N-Queens problem.
-
+def queens(chessBoard, row, majestyz, resolve):
+    """
     Args:
-    - n (int): The size of the chessboard and the number of queens to be
-      placed.
+        chessBoard (list)
+        row (int)
+        majestyz (int)
+        resolve (list)
 
     Returns:
-    - list: A list of lists, each inner list representing a valid queen
-    placement on the board.
+        resolve (list)
     """
+    if majestyz == len(chessBoard):
+        resolve.append(extract(chessBoard))
+        return (resolve)
 
-    result = []
-    backtrack(n, [], result)
-    return result
+    for col in range(len(chessBoard)):
+        if chessBoard[row][col] == -1:
+            demo = copyBoard(chessBoard)
+            demo[row][col] = 1
+            cancel(demo, row, col)
+            resolve = queens(demo, row + 1, majestyz + 1, resolve)
+    return (resolve)
 
 
-def backtrack(n, path, result):
-    """Backtracking function to find valid queen placements.
+def cancel(chessBoard, row, col):
+    """
+    Cancels out vulnerable positions for the queen
 
     Args:
-    - n (int): The size of the chessboard and the number of queens to be
-      placed.
-    - path (list): The current queen placement being explored.
-    - result (list): The list to store valid queen placements.
+        chessBoard (list)
+        row (int)
+        col (int)
     """
+    length = len(chessBoard)
+    """Cancel forward positions"""
+    for c in range(col + 1, length):
+        chessBoard[row][c] = 0
+    """Cancel backwards positions"""
+    for c in range(col - 1, -1, -1):
+        chessBoard[row][c] = 0
+    """Cancel down positions"""
+    for r in range(row + 1, length):
+        chessBoard[r][col] = 0
+    """Cancel up positions"""
+    for r in range(row - 1, -1, 1):
+        chessBoard[r][col] = 0
+    """Cancel right downward diagonal positions"""
+    c = col + 1
+    for r in range(row + 1, length):
+        if c >= length:
+            break
+        chessBoard[r][c] = 0
+        c += 1
+    """Cancel left upward diagonal positions"""
+    c = col - 1
+    for r in range(row - 1, -1, -1):
+        if c < 0:
+            break
+        chessBoard[r][c] = 0
+        c -= 1
+    """Cancel right upward diagonal positions"""
+    c = col + 1
+    for r in range(row - 1, -1, -1):
+        if c >= length:
+            break
+        chessBoard[r][c] = 0
+        c += 1
+    """Cancel left downward diagonal positions"""
+    c = col - 1
+    for r in range(row + 1, length):
+        if c < 0:
+            break
+        chessBoard[r][c] = 0
+        c -= 1
 
-    if len(path) == n:
-        result.append([[i, path[i]] for i in range(n)])
-        return
 
-    for col in range(n):
-        if is_safe(col, path):
-            path.append(col)
-            backtrack(n, path, result)
-            path.pop()
-
-
-def is_safe(col, path):
-    """Check if placing a queen at a specific position is safe.
-
-    Args:
-    - col (int): The column position to check.
-    - path (list): The current queen placement being explored.
-
-    Returns:
-    - bool: True if placing a queen at the position is safe, False otherwise.
+def chessBoard(N):
     """
+    Create a board of size N * N
+    """
+    chessBoard = []
 
-    row = len(path)
-    for r, c in enumerate(path):
-        if c == col or r - c == row - col or r + c == row + col:
-            return False
-    return True
+    """Create rows"""
+    for row in range(N):
+        chessBoard.append([])
+
+    """Create columns"""
+    for row in chessBoard:
+        for n in range(N):
+            row.append(-1)
+
+    return (chessBoard)
 
 
-if len(sys.argv) < 2:
-    print("Usage: nqueens N")
-    sys.exit(1)
+def copyBoard(chessBoard):
+    """
+    make a copy of chessBoard
+    """
+    if type(chessBoard) == list:
+        """Recursively copy"""
+        return list(map(copyBoard, chessBoard))
+    return (chessBoard)
 
-n = sys.argv[1]
 
-try:
-    n = int(n)
-except ValueError:
-    print("N must be a number")
-    sys.exit(1)
-if n < 4:
-    print("N must be at least 4")
-    sys.exit(1)
-moves = move(n)
-for movement in moves:
-    print(movement)
+def extract(chessBoard):
+    """
+    Extract the required outcome from the chess board
+    """
+    outcome = []
+    for row in range(len(chessBoard)):
+        for col in range(len(chessBoard)):
+            if chessBoard[row][col] == 1:
+                outcome.append([row, col])
+                break
+    return (outcome)
+
+
+def execute():
+    import sys
+
+    if len(sys.argv) != 2:
+        print("Usage: nqueens N")
+        sys.exit(1)
+    if sys.argv[1].isnumeric() is False:
+        print("N must be a number")
+        sys.exit(1)
+    if int(sys.argv[1]) < 4:
+        print("N must be at least 4")
+        sys.exit(1)
+
+    chess = chessBoard(int(sys.argv[1]))
+    resultMatrix = queens(chess, 0, 0, [])
+    for row in resultMatrix:
+        print(row)
+
+
+if __name__ == '__main__':
+    execute()
