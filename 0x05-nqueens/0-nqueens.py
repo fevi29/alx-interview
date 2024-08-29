@@ -1,48 +1,100 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
+"""N Queens placement on NxN chessboard"""
+
+
 import sys
 
-def is_safe(board, row, col):
-    """
-    Checks if placing a queen at (row, col) is safe.
-    """
-    for i in range(row):
-        if board[i] == col or abs(board[i] - col) == row - i:
-            return False
-    return True
 
-def solve_nqueens(n, row=0, board=None):
+def generate_solutions(row, column):
     """
-    Solves the N-Queens problem using backtracking.
+    solve a simple N x N matrix
+    Args:
+        row (int): Number of rows
+        column (int): Number of columns
+    Returns:
+        returns a list of lists
     """
-    if board is None:
-        board = [-1] * n
+    solution = [[]]
+    for queen in range(row):
+        solution = place_queen(queen, column, solution)
+    return solution
 
-    if row == n:
-        print(board)
-        return
 
-    for col in range(n):
-        if is_safe(board, row, col):
-            board[row] = col
-            solve_nqueens(n, row + 1, board)
-            board[row] = -1
+def place_queen(queen, column, prev_solution):
+    """
+    Place the queen at a certain position
+    Args:
+        queen (int): The queen
+        column (int): The column to move
+        prev_solution (list): the previous move
+    Returns:
+        returns a list
+    """
+    safe_position = []
+    for array in prev_solution:
+        for x in range(column):
+            if is_safe(queen, x, array):
+                safe_position.append(array + [x])
+    return safe_position
 
-def main():
+
+def is_safe(q, x, array):
+    """
+    check if it's safe to make a move
+    Args:
+        q (int): row to move to
+        x (int): column to move to
+        array (array): the matrix
+    Returns:
+        returns a boolean
+    """
+    if x in array:
+        return (False)
+    else:
+        return all(abs(array[column] - x) != q - column
+                   for column in range(q))
+
+
+def init():
+    """
+    Lets initialize the game shall we?
+    Args:
+        this function doesn't take any args
+    Returns:
+        returns an integer
+    """
     if len(sys.argv) != 2:
-        print("Usage: {} N".format(sys.argv[0]))
+        print("Usage: nqueens N")
         sys.exit(1)
-
-    try:
+    if sys.argv[1].isdigit():
         n = int(sys.argv[1])
-    except ValueError:
+    else:
         print("N must be a number")
         sys.exit(1)
-
     if n < 4:
         print("N must be at least 4")
         sys.exit(1)
+    return (n)
 
-    solve_nqueens(n)
 
-if __name__ == "__main__":
-    main()
+def n_queens():
+    """
+    The main entry point
+    Args:
+        can be called without passing args
+    Returns:
+        returns None
+    Example
+    -----------------------
+    """
+    n = init()
+    solutions = generate_solutions(n, n)
+    for array in solutions:
+        clean = []
+        for q, x in enumerate(array):
+            clean.append([q, x])
+        print(clean)
+
+
+if __name__ == '__main__':
+    n_queens()
