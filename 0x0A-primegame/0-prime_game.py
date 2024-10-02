@@ -1,5 +1,6 @@
 #!/usr/bin/python3
-"""Module defining isWinner function."""
+"""Module for Prime Game"""
+
 
 def isWinner(x, nums):
     """
